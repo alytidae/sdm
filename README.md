@@ -1,0 +1,2 @@
+# sdm
+Simple Dotfiles Manager 
