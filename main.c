@@ -22,13 +22,11 @@ struct Token{
 
 void show_help(){
     printf("Usage:\n");
-    printf("  program [OPTIONS]\n\n");
+    printf("    sdm [OPTIONS] [file]\n\n");
     printf("Options:\n");
-    printf("  -h, --help               Display this help message and exit\n");
-    printf("  -s, --devices PATH       Show devices from a specified PATH\n");
-    printf("  -d, --devices            Specify devices to filter (requires -f)\n");
-    printf("  -f, --file PATH          Specify the file to read devices from\n");
-    printf("  -o, --output PATH        Output generated configuration to PATH\n");
+    printf("  -h, --help               Display this help message\n");
+    printf("  -s, --devices PATH       Show available devices in the config file\n");
+    printf("  -d, --device             Get the device config (requires a file to be provided)\n");
     printf("\n");
 }
 
