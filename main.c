@@ -238,7 +238,6 @@ int main(int argc, char* argv[]) {
         {"device",  required_argument, 0, 'd'},
         {"output",  required_argument, 0, 'o'},
         {"help",    no_argument,       0, 'h'},
-        // {"list",    no_argument,       0, 'l'},
         {0, 0, 0, 0}
     };
 
@@ -246,32 +245,23 @@ int main(int argc, char* argv[]) {
     while ((opt = getopt_long(argc, argv, "d:o:h", long_options, &option_index)) != -1){
         switch(opt){
             case 'd':
-                // printf("Option d has arg: %s\n", optarg);
                 device_provided = true;
                 device = optarg;
                 break;
             case 'o':
-                // printf("Option o has arg: %s\n", optarg);
                 output_provided = true;
                 output = optarg;
                 break;
             case 'h':
-                // printf("Option h was provided\n");
                 show_help();
                 break;
-            // case 'l':
-            //     printf("Option l was provided\n");
-            //     break;
         }
     };
 
     if (optind < argc) 
     {
-        // printf("Non-option arg: ");
-        // printf("%s ", argv[optind]);
         config_provided = true;
         config = argv[optind];
-        // printf("\n");
     }
 
     if (argc == 1){
@@ -316,17 +306,4 @@ int main(int argc, char* argv[]) {
         fclose(fptr);
         free(buffer);
     }
-
-
-    // for (int i = 0; tokens[i].type != END_OF_FILE && i < 10000; i++){
-        // printf("%s", tokens[i].lexeme);
-    // }
-
-    // printf("\n");
-
-
-    // print_devices(tokens);
-    // print_device_config("pc", tokens);
-    
-
 }
