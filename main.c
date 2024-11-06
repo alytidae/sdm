@@ -25,7 +25,7 @@ void show_help(){
     printf("    sdm [OPTIONS] [file]\n\n");
     printf("Options:\n");
     printf("  -h, --help               Display this help message\n");
-    printf("  -s, --devices PATH       Show available devices in the config file\n");
+    printf("  -s, --devices            Show available devices in the config file (requires a file to be provided)\n");
     printf("  -d, --device             Get the device config (requires a file to be provided)\n");
     printf("\n");
 }
@@ -231,26 +231,24 @@ int main(int argc, char* argv[]) {
     char* config = false;
     bool device_provided = false;
     char* device;
-    bool output_provided = false;
-    char* output;
+    bool devices_asked = false;
 
     static struct option long_options[] = {
         {"device",  required_argument, 0, 'd'},
-        {"output",  required_argument, 0, 'o'},
+        {"devices", no_argument,       0, 's'},
         {"help",    no_argument,       0, 'h'},
         {0, 0, 0, 0}
     };
 
     //TODO: Add custom erros
-    while ((opt = getopt_long(argc, argv, "d:o:h", long_options, &option_index)) != -1){
+    while ((opt = getopt_long(argc, argv, "d:sh", long_options, &option_index)) != -1){
         switch(opt){
             case 'd':
                 device_provided = true;
                 device = optarg;
                 break;
             case 'o':
-                output_provided = true;
-                output = optarg;
+                devices_asked = true;
                 break;
             case 'h':
                 show_help();
@@ -294,7 +292,7 @@ int main(int argc, char* argv[]) {
         struct Token tokens[10000];
         scan_tokens(buffer, buffer_size, tokens);
 
-        if(!device_provided){
+        if(!device_provided || devices_asked){
             show_devices(tokens);
         }else{
             show_device_config(device, tokens);
