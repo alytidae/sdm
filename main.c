@@ -17,7 +17,6 @@ enum TokenType{
 struct Token{
     enum TokenType type;
     char* lexeme;
-    int line;
 };
 
 void show_help(){
@@ -68,7 +67,6 @@ void show_device_config(char* device, struct Token* tokens){
 void scan_tokens(char* text, int size, struct Token* tokens){
     int i = 0;
     int token_i = 0;
-    int line = 0;
 
     bool block_start = false;
     bool device_start = false;
@@ -77,10 +75,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
     int s_i = 0;
 
     while (text[i] != '\0'){
-        if (text[i] == '\n'){
-            line++;
-        }
-
         stream[s_i] = text[i];
         stream[s_i+1] = '\0';
        
@@ -102,7 +96,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
                 if (t.lexeme != NULL) { 
                     strcpy(t.lexeme, tmp_config); 
                 }
-                t.line = line;
 
                 tokens[token_i++] = t;
 
@@ -111,7 +104,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
                 if (t.lexeme != NULL) { 
                     strcpy(t.lexeme, "~~\0"); 
                 }
-                t.line = line;
 
                 tokens[token_i++] = t;
                 s_i = 0;
@@ -129,7 +121,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
                 if (t.lexeme != NULL) { 
                     strcpy(t.lexeme, tmp_device); 
                 }
-                t.line = line;
 
                 tokens[token_i++] = t;
 
@@ -138,7 +129,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
                 if (t.lexeme != NULL) { 
                     strcpy(t.lexeme, "~~\0"); 
                 }
-                t.line = line;
 
                 tokens[token_i++] = t;
                 s_i = 0;
@@ -159,7 +149,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
             if (t.lexeme != NULL) { 
                 strcpy(t.lexeme, tmp_text); 
             }
-            t.line = line;
                    
             tokens[token_i++] = t;
 
@@ -168,7 +157,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
             if (t.lexeme != NULL) { 
                 strcpy(t.lexeme, "@@sdm-block"); 
             }
-            t.line = line;
             
             tokens[token_i++] = t;
 
@@ -188,7 +176,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
             if (t.lexeme != NULL) { 
                 strcpy(t.lexeme, tmp_config); 
             }
-            t.line = line;
 
             tokens[token_i++] = t;
 
@@ -197,7 +184,6 @@ void scan_tokens(char* text, int size, struct Token* tokens){
             if (t.lexeme != NULL) { 
                 strcpy(t.lexeme, "@@"); 
             }
-            t.line = line;
 
             tokens[token_i++] = t;
 
@@ -213,12 +199,11 @@ void scan_tokens(char* text, int size, struct Token* tokens){
         if (t.lexeme != NULL) { 
             strcpy(t.lexeme, stream); 
         }
-        t.line = line;
 
         tokens[token_i++] = t;
     }
 
-    struct Token te = {END_OF_FILE, "\0", line};
+    struct Token te = {END_OF_FILE, "\0"};
     tokens[token_i++] = te;
 }
 
@@ -240,7 +225,6 @@ int main(int argc, char* argv[]) {
         {0, 0, 0, 0}
     };
 
-    //TODO: Add custom erros
     while ((opt = getopt_long(argc, argv, "d:sh", long_options, &option_index)) != -1){
         switch(opt){
             case 'd':
