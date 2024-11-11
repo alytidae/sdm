@@ -63,7 +63,19 @@ void show_device_config(char* device, struct Token* tokens){
     }
 }
 
-//TODO: Rewrite later
+
+void add_token(enum TokenType type, char* lexeme, struct Token* tokens, int* token_index){
+    struct Token t;
+    t.type = type;
+    t.lexeme = malloc(strlen(lexeme) + 1);
+    if (t.lexeme != NULL) { 
+        strcpy(t.lexeme, lexeme); 
+        t.lexeme[strlen(lexeme)] = '\0';
+    }
+    
+    tokens[(*token_index)++] = t;
+}
+
 void scan_tokens(char* text, int size, struct Token* tokens){
     int i = 0;
     int token_i = 0;
@@ -86,51 +98,20 @@ void scan_tokens(char* text, int size, struct Token* tokens){
                 device_start = true;
                 
                 char tmp_config[s_i - 2 + 1];
+                snprintf(tmp_config, s_i - 2 + 1, "%.*s", s_i - 2, stream);
+                add_token(CONFIG, tmp_config, tokens, &token_i);
+                add_token(DEVICE_PAREN, "~~", tokens, &token_i);
 
-                strncpy(tmp_config, stream, s_i - 2 + 1);
-                tmp_config[s_i - 2] = '\0';
-
-                struct Token t;
-                t.type = CONFIG;
-                t.lexeme = malloc(strlen(tmp_config) + 1);
-                if (t.lexeme != NULL) { 
-                    strcpy(t.lexeme, tmp_config); 
-                }
-
-                tokens[token_i++] = t;
-
-                t.type = DEVICE_PAREN;
-                t.lexeme = malloc(3);
-                if (t.lexeme != NULL) { 
-                    strcpy(t.lexeme, "~~\0"); 
-                }
-
-                tokens[token_i++] = t;
                 s_i = 0;
+
             }else if(strstr(stream, "~~") != NULL && device_start){
                 device_start = false;
                                 
-                char tmp_device[s_i - 2 + 1];
+                char tmp_config[s_i - 2 + 1];
+                snprintf(tmp_config, s_i - 2 + 1, "%.*s", s_i - 2, stream);
+                add_token(DEVICE_NAME, tmp_config, tokens, &token_i);
+                add_token(DEVICE_PAREN, "~~", tokens, &token_i);
 
-                strncpy(tmp_device, stream, s_i - 2 + 1);
-                tmp_device[s_i - 2] = '\0';
-
-                struct Token t;
-                t.type = DEVICE_NAME;
-                t.lexeme = malloc(strlen(tmp_device) + 1);
-                if (t.lexeme != NULL) { 
-                    strcpy(t.lexeme, tmp_device); 
-                }
-
-                tokens[token_i++] = t;
-
-                t.type = DEVICE_PAREN;
-                t.lexeme = malloc(3);
-                if (t.lexeme != NULL) { 
-                    strcpy(t.lexeme, "~~\0"); 
-                }
-
-                tokens[token_i++] = t;
                 s_i = 0;
             }
 
@@ -138,27 +119,11 @@ void scan_tokens(char* text, int size, struct Token* tokens){
 
         if (strstr(stream, "@@sdm-block") != NULL && !block_start){
             block_start = true;
-            char tmp_text[s_i- 11 + 1];
 
-            strncpy(tmp_text, stream, s_i - 11 +1);
-            tmp_text[s_i - 11] = '\0';
-
-            struct Token t;
-            t.type = TEXT;
-            t.lexeme = malloc(strlen(tmp_text) + 1);
-            if (t.lexeme != NULL) { 
-                strcpy(t.lexeme, tmp_text); 
-            }
-                   
-            tokens[token_i++] = t;
-
-            t.type = START_BLOCK;
-            t.lexeme = malloc(11+1);
-            if (t.lexeme != NULL) { 
-                strcpy(t.lexeme, "@@sdm-block"); 
-            }
-            
-            tokens[token_i++] = t;
+            char tmp_config[s_i - 11 + 1];
+            snprintf(tmp_config, s_i - 11 + 1, "%.*s", s_i - 11, stream);
+            add_token(TEXT, tmp_config, tokens, &token_i);
+            add_token(START_BLOCK, "@@sdm-block", tokens, &token_i);
 
             s_i = 0;
 
@@ -166,26 +131,9 @@ void scan_tokens(char* text, int size, struct Token* tokens){
             block_start  = false;
 
             char tmp_config[s_i - 2 + 1];
-
-            strncpy(tmp_config, stream, s_i - 2 + 1);
-            tmp_config[s_i - 2] = '\0';
-
-            struct Token t;
-            t.type = CONFIG;
-            t.lexeme = malloc(strlen(tmp_config) + 1);
-            if (t.lexeme != NULL) { 
-                strcpy(t.lexeme, tmp_config); 
-            }
-
-            tokens[token_i++] = t;
-
-            t.type = STOP_BLOCK;
-            t.lexeme = malloc(2 + 1);
-            if (t.lexeme != NULL) { 
-                strcpy(t.lexeme, "@@"); 
-            }
-
-            tokens[token_i++] = t;
+            snprintf(tmp_config, s_i - 2 + 1, "%.*s", s_i - 2, stream);
+            add_token(CONFIG, tmp_config, tokens, &token_i);
+            add_token(STOP_BLOCK, "@@", tokens, &token_i);
 
             s_i = 0;
         }
@@ -193,18 +141,10 @@ void scan_tokens(char* text, int size, struct Token* tokens){
     }
 
     if (strlen(stream) > 1){
-        struct Token t;
-        t.type = TEXT;
-        t.lexeme = malloc(strlen(stream) + 1);
-        if (t.lexeme != NULL) { 
-            strcpy(t.lexeme, stream); 
-        }
-
-        tokens[token_i++] = t;
+        add_token(TEXT, stream, tokens, &token_i);
     }
 
-    struct Token te = {END_OF_FILE, "\0"};
-    tokens[token_i++] = te;
+    add_token(END_OF_FILE, "\0", tokens, &token_i);
 }
 
 int main(int argc, char* argv[]) {
